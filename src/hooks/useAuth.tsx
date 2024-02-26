@@ -11,7 +11,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  point: string;
+  photo: string;
   token: string;
 }
 

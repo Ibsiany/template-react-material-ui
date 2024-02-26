@@ -41,7 +41,7 @@ export function Login() {
         password: data.get('password')?.toString() ?? '',
       });
 
-      navigate('/auth/dashboard');
+      navigate('/auth/home');
     } catch (error) {
       toast.error('Usuário ou senha incorreto(s)!');
     }
