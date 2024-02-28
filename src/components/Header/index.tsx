@@ -1,14 +1,15 @@
-import SearchIcon from '@mui/icons-material/Search';
-import { AppBar, Avatar, Box, Button, IconButton, InputBase, Toolbar, Typography } from '@mui/material';
+import { AppBar, Avatar, Box, Button, IconButton, Toolbar, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo/logo.png';
 import userDefault from '../../assets/user.jpeg';
 import { useAuth } from '../../hooks/useAuth';
 
 
-const Header = ({ param }: { param: string | undefined }) => {
+const Header = ({ param, searchBar }: { param: string | undefined, searchBar?:any }) => {
   const navigate = useNavigate();
-  const { user, signOut} = useAuth();
+  const { user, signOut } = useAuth();
+  
+  const SearchBar = searchBar;
 
   const navigateHeader = async () => {
     if (param === 'login') {
@@ -20,20 +21,6 @@ const Header = ({ param }: { param: string | undefined }) => {
 
       navigate('/');
     }
-  };
-
-
-  const SearchBar = () => {
-    return (
-      <div style={{ width:'80%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-         <div style={{ width:'60%'}}>
-            <div style={{ position: 'relative', borderRadius: '4px', backgroundColor: '#f1f1f1', width:'100%'}}>
-                <SearchIcon style={{ position: 'absolute', margin: '5px', zIndex:'1'}} />
-                <InputBase placeholder="Pesquisar" style={{ width:'100%',paddingLeft: '40px',paddingTop:'3px', background:'white', borderRadius:'4px' }} />
-            </div>
-          </div>
-      </div>
-    );
   };
 
   return (
