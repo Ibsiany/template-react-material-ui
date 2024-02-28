@@ -1,3 +1,4 @@
+import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Container, FormControl, Grid, InputBase, InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
 import { useState } from 'react';
@@ -47,10 +48,14 @@ type ICard = {
 
 export function Home() {
   const [cards, setCards] = useState<ICard[]>([]);
+  const [status, setStatus] = useState('');
   const [open, setOpen] = useState(false);
   
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false)
+    setStatus('')
+  };
 
   const { user } = useAuth();
 
@@ -90,7 +95,6 @@ export function Home() {
       toast.error('Ocorreu um erro ao cadastrar card!');
     }
   };
-
 
   const searchCard = async (search:any) => {
     try {
@@ -174,18 +178,30 @@ export function Home() {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel id="status">Status</InputLabel>
-                <Select
-                  labelId="status"
-                  id="status"
+              {status !== '' ?
+                 <TextField
+                 required
+                 fullWidth
+                 id="status"
+                 label="Status"
                   name="status"
-                >
-                  {columns.map((column) => {
-                    return <MenuItem value={column.status}>{column.name}</MenuItem>
-                  })}
-                </Select>
-              </FormControl>
+                  value={status}
+                  disabled
+               />
+                :
+                <FormControl fullWidth required>
+                  <InputLabel id="status">Status</InputLabel>
+                  <Select
+                    labelId="status"
+                    id="status"
+                    name="status"
+                  >
+                    {columns.map((column) => {
+                      return <MenuItem value={column.status}>{column.name}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>   
+                }
             </Grid>
           </Grid>
           <Button
@@ -214,38 +230,71 @@ export function Home() {
           Nova Task
         </Button>
       </Grid>
-      <DragDropContext onDragEnd={onDragEnd}>
-        {columns.map((column) => {
-          return (
-            <Droppable droppableId={column.status} key={column.status}>
+        <DragDropContext onDragEnd={onDragEnd}>
+        <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'auto', justifyContent: 'center',alignItems: 'center' }}> 
+          {columns.map((column) => {
+            return (
+              <Droppable
+                droppableId={column.status}
+                key={column.status}
+                direction="horizontal"
+              >
               {(provided) => (
                 <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{ margin: '8px', border: '1px solid lightgrey', borderRadius: '2px', width: '220px', display: 'flex', flexDirection: 'column' }}
+                {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    style={{ marginTop:'1rem', width: '100%', color:'#9CA3AD'}}
                 >
-                  <h3>{column.name}</h3>
-                  {cards.map((card, index) => (
-                    <Draggable draggableId={card.id} index={index} key={card.id}>
-                              {(provided) => (
-                        <div
+                    <h3>{column.name}</h3>
+                    <Draggable draggableId='2' index={0} key='2'>
+                      {(provided) => (
+                        <Button
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
+                          onClick={() => (setStatus(column.status), handleOpen())}
                           ref={provided.innerRef}
-                          style={{ userSelect: 'none', padding: '8px', margin: '0 0 8px 0', minHeight: '50px', backgroundColor: 'white', ...provided.draggableProps.style }}
+                          style={{
+                            padding: '8px',
+                            backgroundColor: '#F6F7F9',
+                            ...provided.draggableProps.style,
+                            width: '95%',
+                            color: '#9CA3AD',
+                            textTransform: 'none',
+                            display: 'flex',
+                            alignItems: 'start',
+                            justifyContent: 'start',
+                          }}
                         >
-                          {card.title}
-                        </div>
-                      )}
+                          <AddIcon/>
+                          Nova Task
+                        </Button>
+                    )}
                     </Draggable>
-                     ))}
-                     {provided.placeholder}
-                   </div>
-                 )}
-               </Droppable>
-             );
-           })}
-         </DragDropContext>
+                    {cards.map((card, index) => {
+                      console.log(card)
+                      if (card.status === column.status) return (
+                        <Draggable draggableId={card.id} index={index} key={card.id}>
+                          {(provided) => (
+                            <div
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              ref={provided.innerRef}
+                              style={{ padding: '8px', backgroundColor: '#F6F7F9', ...provided.draggableProps.style  }}
+                            >
+                              {card.title}
+                            </div>
+                          )}
+                        </Draggable>
+                      )
+                    })}
+                  {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+              );
+          })}
+        </div>
+      </DragDropContext>
       </Container>
      <ModalComponent />
     </ThemeProvider>
