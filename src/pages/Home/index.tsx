@@ -16,10 +16,25 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: '27.25rem',
+  height: '32.313rem',
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  borderRadius: '0.5rem',
   boxShadow: 24,
+  background: '#FFFFFF',
+  p: 4,
+};
+
+const styleCategory = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '25rem',
+  bgcolor: 'background.paper',
+  borderRadius: '0.5rem',
+  boxShadow: 24,
+  background: '#FFFFFF',
   p: 4,
 };
 
@@ -54,14 +69,25 @@ type ICategories = {
 
 export function Home() {
   const [cards, setCards] = useState<ICard[]>([]);
+  const [categories, setCategories] = useState<ICategories[]>([]);
   const [status, setStatus] = useState('');
   const [open, setOpen] = useState(false);
-  
-  const handleOpen = () => setOpen(true);
+  const [cardModal, setCardModal] = useState<ICard>();
+  const [openCategory, setOpenCategory] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  const handleOpen = (card?: ICard) => {
+    setCardModal(card)
+    setOpen(true);
+  };
   const handleClose = () => {
+    setSelectedCategories([])
     setOpen(false)
     setStatus('')
   };
+  
+  const handleOpenCategory = () => setOpenCategory(true);
+  const handleCloseCategory = () => setOpenCategory(false);
 
   const { user } = useAuth();
 
@@ -84,7 +110,12 @@ export function Home() {
 
   useEffect(() => {
     api.get(`/card/${user.user.id}`).then(response => {
+      console.log(response.data)
       setCards(response.data)
+    })
+
+    api.get(`/category/${user.user.id}`).then(response => {
+      setCategories(response.data)
     })
   },[user.user.id])
 
@@ -99,15 +130,41 @@ export function Home() {
       
       return;
     }
+
     
     try {
       await api.post(`/card/${user.user.id}`, {
         title: data.get('title'),
         description: data.get('description'),
-        status: data.get('status')
+        status: data.get('status'),
+        category_ids:selectedCategories
       });
 
       handleClose()
+    } catch (error) {
+      toast.error('Ocorreu um erro ao cadastrar card!');
+    }
+  };
+
+  const handleSubmitCreateCategory = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+
+    
+    if (!data.get('name') || !data.get('color')) {
+      toast.error('Preencha todos os campos!');
+      
+      return;
+    }
+    
+    try {
+      await api.post(`/category/${user.user.id}`, {
+        name: data.get('name'),
+        color: data.get('color'),
+      });
+
+      handleCloseCategory()
     } catch (error) {
       toast.error('Ocorreu um erro ao cadastrar card!');
     }
@@ -163,6 +220,51 @@ export function Home() {
     );
   };
 
+  const ModalCreateCategory = () => {
+    return (
+      <Modal
+      open={openCategory}
+      onClose={handleCloseCategory}
+      aria-labelledby="child-modal-title"
+      aria-describedby="child-modal-description"
+    >
+      <Box component="form" noValidate onSubmit={handleSubmitCreateCategory} sx={styleCategory}>
+        <Typography component="text" variant="overline" style={{ textAlign: 'start'}}>
+          Criação de card
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              id="name"
+              label="Nome"
+              name="name"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              id="color"
+              label="Cor"
+              name="color"
+            />
+          </Grid>
+        </Grid>
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+        >
+          Criar
+        </Button>
+      </Box>
+    </Modal>
+    )
+  }
+
   const ModalComponent = () => {
     return (
       <Modal
@@ -172,64 +274,97 @@ export function Home() {
         aria-describedby="modal-modal-description"
       >
       <Box component="form" noValidate onSubmit={handleSubmitCreateCard} sx={style}>
-          <Typography component="h1" variant="h5" style={{ textAlign: 'center', margin: '1rem'}}>
-            Criação de card
-          </Typography>
+        <Typography component="text" variant="overline" style={{ textAlign: 'start'}}>
+          Criação de card
+        </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="title"
-                label="Titulo"
-                name="title"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="description"
-                label="Descrição"
-                name="description"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              {status !== '' ?
-                 <TextField
-                 required
-                 fullWidth
-                 id="status"
-                 label="Status"
-                  name="status"
-                  value={status}
-                  disabled
-               />
-                :
-                <FormControl fullWidth required>
-                  <InputLabel id="status">Status</InputLabel>
-                  <Select
-                    labelId="status"
-                    id="status"
-                    name="status"
+          <Grid item xs={12}>
+              <FormControl fullWidth required style={{ display: 'flex',alignItems:'center',  flexDirection: 'row'}}>
+                <InputLabel id="category">Categorias</InputLabel>
+                <Select
+                  labelId="category"
+                  id="category"
+                  name="category"
+                  style={{ width: '80%' }}
+                  value={selectedCategories}
+                  onChange={(event) => setSelectedCategories(Array.isArray(event.target.value) ? event.target.value : [event.target.value])}
+                  multiple
+                >
+                  {categories.map((category) => {
+                    return <MenuItem value={category.id}>{category.name}</MenuItem>
+                  })}
+                </Select>
+                <Button
+                    onClick={handleOpenCategory}
+                    style={{
+                      padding: '8px',
+                      color: '#9CA3AD',
+                      backgroundColor: 'transparent',
+                      background:'none',
+                      textTransform: 'none',
+                      width: '20%',
+                    }}
                   >
-                    {columns.map((column) => {
-                      return <MenuItem value={column.status}>{column.name}</MenuItem>
-                    })}
-                  </Select>
-                </FormControl>   
-                }
-            </Grid>
+                    <AddIcon/>
+                  </Button>
+              </FormControl>   
           </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Criar
-          </Button>
-        </Box>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              id="title"
+              label="Titulo"
+              name="title"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              id="description"
+              type="textarea"
+              label="Descrição"
+              name="description"
+              multiline
+              rows={4}
+            />
+            </Grid>
+            <Grid item xs={12}>
+            {status !== '' ?
+                <TextField
+                required
+                id="status"
+                label="Status"
+                name="status"
+                value={status}
+                disabled
+              />
+              :
+              <FormControl fullWidth required>
+                <InputLabel id="status">Status</InputLabel>
+                <Select
+                  labelId="status"
+                  id="status"
+                  name="status"
+                >
+                  {columns.map((column) => {
+                    return <MenuItem value={column.status}>{column.name}</MenuItem>
+                  })}
+                </Select>
+              </FormControl>   
+              }
+            </Grid>
+        </Grid>
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+        >
+          Criar
+        </Button>
+      </Box>
       </Modal>
     )
   }
@@ -243,7 +378,7 @@ export function Home() {
         <Typography variant="h6">
           Chameleon Stack - Kanban
         </Typography>
-        <Button variant="contained" color="primary" onClick={handleOpen} style={{ textTransform: 'none',}}>
+        <Button variant="contained" color="primary" onClick={()=>handleOpen()} style={{ textTransform: 'none',}}>
           Nova Task
         </Button>
       </Grid>
@@ -309,7 +444,7 @@ export function Home() {
                   </Button>
                     {cards.map((card, index) => {
                     if(card.status === column.status) return (
-                    <Draggable draggableId={card.id} index={index+1} key={card.id} >
+                    <Draggable draggableId={card.id} index={index+1} key={card.id}>
                       {(provided) => (
                         <div
                           {...provided.draggableProps}
@@ -327,6 +462,7 @@ export function Home() {
                             height: '11rem',
                             marginBottom: '1rem',
                           }}
+                          onClick={() => handleOpen(card)}
                         >
                           <h4 style={{
                             color: 'black',
@@ -340,16 +476,20 @@ export function Home() {
                           </h4>
                           
                           <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'start', gap: '8px', marginBottom: '1rem', flexDirection: 'row' }}>
-                            {card?.categories && card?.categories.map((card) => {
-                              <h5 style={{
-                                width: 'auto',
-                                height: '24px',
-                                padding: '4px',
-                                borderRadius: '100px',
-                                gap: '8px',
-                                background: card.color,
-                                color: darken(0.5, card.color),
-                              }}>{card.name}</h5>
+                              {card?.categories && card?.categories.map((category) => {
+                              return (
+                                <h5 style={{
+                                  width: 'auto',
+                                  height: '24px',
+                                  padding: '0.5rem',
+                                  borderRadius: '100px',
+                                  gap: '8px',
+                                  background: category.color,
+                                  color: darken(0.5, category.color),
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                }}>{category.name}</h5>
+                              )
                             })}
                           </div>
                           <text style={{
@@ -372,6 +512,7 @@ export function Home() {
       </DragDropContext>
       </Container>
      <ModalComponent />
+     <ModalCreateCategory />
     </ThemeProvider>
   );
 };
