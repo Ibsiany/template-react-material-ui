@@ -39,19 +39,17 @@ const columns = [
 ];
 
 type ICard = {
-  id: "177f5cf2-ed0a-4e10-8160-a9c7d419f0c3",
-  created_at: "2023-10-29T23:00:00.758Z",
-  updated_at: "2023-10-29T23:00:00.758Z",
-  description: "create crud",
-  status: "10",
-  title: "Create CRUD",
+  id: string,
+  description: string,
+  status:string,
+  title: string,
   categories:ICategories[]
 }
 
 type ICategories = {
-  id: "177f5cf2-ed0a-4e10-8160-a9c7d419f0c3",
-  color: "2022-01-13T01:06:54.758Z",
-  name: "Test",
+  id: string,
+  color: string,
+  name: string,
 }
 
 export function Home() {
@@ -68,11 +66,21 @@ export function Home() {
 
   const { user } = useAuth();
 
-  const onDragEnd = () => {
-    console.log('Finalizou')
-    // api.get(`/card/${user.user.id}`).then(response => {
-    //   setCards(response.data)
-    // })
+  const onDragEnd = (result:any) => {
+    const { draggableId, destination } = result;
+    
+    if (!destination) {
+      return;
+    }
+  
+    api.patch(`/card/${draggableId}`, {
+      status: destination.droppableId,
+    }).then(response => {
+      const getCards = cards.filter(card => card.id !== draggableId)
+      console.log([...getCards,response.data])
+
+      setCards([...getCards,response.data])
+    })
   }
 
   useEffect(() => {
@@ -333,7 +341,7 @@ export function Home() {
                           </h4>
                           
                           <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'start', gap: '8px', marginBottom: '1rem', flexDirection: 'row' }}>
-                            {card.categories.map((card) => {
+                            {card?.categories && card?.categories.map((card) => {
                               <h5 style={{
                                 width: 'auto',
                                 height: '24px',
