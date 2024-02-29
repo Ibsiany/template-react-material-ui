@@ -1,6 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Container, FormControl, Grid, InputBase, InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
+import { darken } from 'polished';
 import { useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import toast, { Toaster } from 'react-hot-toast';
@@ -64,12 +65,6 @@ export function Home() {
       setCards(response.data)
     })
   }
-  
-  // useEffect(() => {
-  //   api.get(`/card/${user.user.id}`).then(response => {
-  //     setCards(response.data)
-  //   })
-  // }, [user.user.id])
 
   const handleSubmitCreateCard = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -221,7 +216,7 @@ export function Home() {
     <ThemeProvider theme={defaultTheme}>
       <Toaster position="top-right" reverseOrder={false} />
       <Header param='home' searchBar={SearchBar} />
-      <Container style={{marginTop: '2rem'}}>
+      <Container style={{marginTop: '2rem', maxWidth: '1220px'}}>
       <Grid container justifyContent="space-between" alignItems="center">
         <Typography variant="h6">
           Chameleon Stack - Kanban
@@ -231,7 +226,7 @@ export function Home() {
         </Button>
       </Grid>
         <DragDropContext onDragEnd={onDragEnd}>
-        <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'auto', justifyContent: 'center',alignItems: 'center' }}> 
+        <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'auto', justifyContent: 'center',alignItems: 'center',gap: '8px' }}> 
           {columns.map((column) => {
             return (
               <Droppable
@@ -243,35 +238,84 @@ export function Home() {
                 <div
                 {...provided.droppableProps}
                     ref={provided.innerRef}
-                    style={{ marginTop:'1rem', width: '100%', color:'#9CA3AD'}}
+                    style={{
+                      marginTop: '1rem',
+                      width: '100%',
+                      backgroundColor: '#F6F7F9',
+                      color: '#9CA3AD',
+                      textTransform: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection:'column',
+                      borderRadius: '4px',
+                      paddingBottom: '1rem',
+                    }}
                 >
-                    <h3>{column.name}</h3>
-                    <Draggable draggableId='2' index={0} key='2'>
-                      {(provided) => (
-                        <Button
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          onClick={() => (setStatus(column.status), handleOpen())}
-                          ref={provided.innerRef}
-                          style={{
-                            padding: '8px',
-                            backgroundColor: '#F6F7F9',
-                            ...provided.draggableProps.style,
-                            width: '95%',
-                            color: '#9CA3AD',
-                            textTransform: 'none',
-                            display: 'flex',
-                            alignItems: 'start',
-                            justifyContent: 'start',
-                          }}
-                        >
-                          <AddIcon/>
-                          Nova Task
-                        </Button>
-                    )}
-                    </Draggable>
-                    {cards.map((card, index) => {
-                      console.log(card)
+                    <h3 style={{background: 'white', width: '100%', padding: '0', margin: '0'}}>{column.name}</h3>
+                    <Button
+                      onClick={() => (setStatus(column.status), handleOpen())}
+                      style={{
+                        padding: '8px',
+                        backgroundColor: '#F6F7F9',
+                        color: '#9CA3AD',
+                        textTransform: 'none',
+                        display: 'flex',
+                        alignItems: 'start',
+                        justifyContent: 'start',
+                      }}
+                    >
+                      <AddIcon/>
+                      Nova Task
+                    </Button>
+                    {/* {cards.map((card, index) => { */}
+                      <Draggable draggableId='1' index={1} key={1}>
+                        {(provided) => (
+                          <div
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            ref={provided.innerRef}
+                            style={{
+                              ...provided.draggableProps.style,
+                              padding: '8px',
+                              borderRadius: '4px',
+                              backgroundColor: 'white',
+                              width: '95%',
+                              textTransform: 'none',
+                              border: '1px solid #EFF1F3',
+                              boxShadow: '0px 4px 8px 0px #14141B14',
+                              height: '11rem',
+                              marginBottom: '1rem',
+                            }}
+                          >
+                            <h4 style={{
+                              color: 'black',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              maxWidth: '25ch',
+                              marginBottom: '1rem'
+                            }}>
+                              Card
+                            </h4>
+                           
+                            <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'start', gap: '8px', marginBottom: '1rem', flexDirection: 'row' }}>
+                              <h5 style={{
+                                width: 'auto',
+                                height: '24px',
+                                padding: '4px',
+                                borderRadius: '100px',
+                                gap: '8px',
+                                background: '#FCF0E9',
+                                color: darken(0.5, '#FCF0E9'),
+                              }}>Categoria</h5>
+                            </div>
+                            <text>Lorem ipsum dolor sit amet</text>
+                          </div>
+                        )}
+                      </Draggable>
+                    {/* // })} */}
+                    {/* {cards.map((card, index) => {
                       if (card.status === column.status) return (
                         <Draggable draggableId={card.id} index={index} key={card.id}>
                           {(provided) => (
@@ -286,7 +330,7 @@ export function Home() {
                           )}
                         </Draggable>
                       )
-                    })}
+                    // })} */}
                   {provided.placeholder}
                   </div>
                 )}
