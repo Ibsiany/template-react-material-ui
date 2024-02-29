@@ -59,7 +59,6 @@ export function Home() {
   
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
-    console.log(cards)
     setOpen(false)
     setStatus('')
   };
