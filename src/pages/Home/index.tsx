@@ -226,7 +226,7 @@ export function Home() {
     try {
       const response = await api.get(`/card/${user.user.id}`, {
         params: {
-          description: search, 
+          title: search, 
         },
       });
 
