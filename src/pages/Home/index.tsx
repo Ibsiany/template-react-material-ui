@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import ClearIcon from '@mui/icons-material/Clear';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Container, FormControl, Grid, InputBase, InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
@@ -263,9 +264,17 @@ export function Home() {
     return (
       <div style={{ width:'80%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <div style={{ width:'60%'}}>
-          <div style={{ position: 'relative', borderRadius: '4px', backgroundColor: '#f1f1f1', width:'100%'}}>
+          <div style={{
+            position: 'relative',
+            borderRadius: '4px',
+            backgroundColor: '#f1f1f1',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+          }}>
             <SearchIcon style={{ position: 'absolute', margin: '5px', zIndex:'1'}} />
             <SearchInput />
+            <Button onClick={() => searchCard('')}><ClearIcon style={{ color: darken(0.4,'#9CA3AD') }} /></Button>
           </div>
         </div>
       </div>
