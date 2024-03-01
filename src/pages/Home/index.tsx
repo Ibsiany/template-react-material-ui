@@ -1,8 +1,8 @@
+import { MoreVert } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
-import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, Button, Container, FormControl, Grid, Input, InputBase, InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
+import { Box, Button, Container, FormControl, Grid, IconButton, Input, InputBase, InputLabel, Menu, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
 import { darken } from 'polished';
 import { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
@@ -78,9 +78,21 @@ export function Home() {
   const [openCardUpdated, setOpenCardUpdated] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
+  const [anchorEl, setAnchorEl] = useState(null);
+    
+  const openClick = Boolean(anchorEl);
+  
+    const handleClick = (event:any) => {
+      setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClickClose = () => {
+      setAnchorEl(null);
+    };
+  
   const handleOpen = () => {
     setOpen(true)
+    handleClickClose()
   };
   const handleClose = () => {
     setSelectedCategories([])
@@ -95,11 +107,13 @@ export function Home() {
     setCardModal(card)
     setSelectedCategories(card?.categories.map(category => category.id) || [])
     setOpenCardUpdated(true);
+    handleClickClose();
   };
   const handleCloseCardUpdated = () => {
     setSelectedCategories([])
     setOpenCardUpdated(false)
     setCardModal(undefined)
+    handleClickClose()
   };
 
   const { user } = useAuth();
@@ -681,15 +695,26 @@ export function Home() {
                               }}>
                                 {card.title}
                               </h4>
-                              <Button
-                                style={{ margin: '0', padding: '0' }}
-                                onClick={(event) => {
+                                <div onClick={(event) => {
                                   event.stopPropagation();
-                                  handleDeleteCard(card.id);
-                                }}
-                              >
-                                <DeleteIcon />
-                              </Button>
+                                }}>
+                                  <IconButton aria-label="settings" onClick={handleClick}>
+                                    <MoreVert />
+                                  </IconButton>
+                                  <Menu
+                                    id="long-menu"
+                                    anchorEl={anchorEl}
+                                    open={openClick}
+                                    onClose={handleClickClose}
+                                  >
+                                    <MenuItem onClick={() => handleOpenCardUpdated(card) }>
+                                      Editar
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { handleDeleteCard(card.id); }}>
+                                      Excluir
+                                    </MenuItem>
+                                  </Menu>
+                                </div>
                             </div> 
                           
                           <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'start', gap: '8px', marginBottom: '1rem', flexDirection: 'row' }}>
