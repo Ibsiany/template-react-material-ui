@@ -73,21 +73,30 @@ export function Home() {
   const [status, setStatus] = useState('');
   const [open, setOpen] = useState(false);
   const [cardModal, setCardModal] = useState<ICard>();
+  const [openCardUpdated, setOpenCardUpdated] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  const handleOpen = (card?: ICard) => {
-    setCardModal(card)
-    setOpen(true);
-  };
+  const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setSelectedCategories([])
     setOpen(false)
     setStatus('')
   };
   
+  
   const handleOpenCategory = () => setOpenCategory(true);
   const handleCloseCategory = () => setOpenCategory(false);
+  
+  const handleOpenCardUpdated = (card?: ICard) => {
+    setCardModal(card)
+    setSelectedCategories(card?.categories.map(category => category.id) || [])
+    setOpenCardUpdated(true);
+  };
+  const handleCloseCardUpdated = () => {
+    setOpenCardUpdated(false)
+    setCardModal(undefined)
+  };
 
   const { user } = useAuth();
 
@@ -143,6 +152,29 @@ export function Home() {
       handleClose()
     } catch (error) {
       toast.error('Ocorreu um erro ao cadastrar card!');
+    }
+  };
+
+  const handleSubmitUpdateCard = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+
+    if (!cardModal) {
+      toast.error('Ocorreu um erro ao atualizar card!');
+    }
+    
+    try {
+      await api.patch(`/card/${cardModal?.id}`, {
+        title: data.get('title'),
+        description: data.get('description'),
+        status: data.get('status'),
+        category_ids:selectedCategories
+      });
+
+      handleClose()
+    } catch (error) {
+      toast.error('Ocorreu um erro ao atualizar card!');
     }
   };
 
@@ -265,6 +297,99 @@ export function Home() {
     )
   }
 
+  const ModalComponentUpdate = () => {
+    return (
+      <Modal
+        open={openCardUpdated}
+        onClose={handleCloseCardUpdated}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+      <Box component="form" noValidate onSubmit={handleSubmitUpdateCard} sx={style}>
+          <Grid container spacing={2}>
+          <Grid item xs={12}>
+              <FormControl fullWidth required style={{ display: 'flex',alignItems:'center',  flexDirection: 'row'}}>
+                <InputLabel id="category">Categorias</InputLabel>
+                <Select
+                  labelId="category"
+                  id="category"
+                  name="category"
+                  style={{ width: '80%' }}
+                  value={selectedCategories}
+                  onChange={(event) => setSelectedCategories(Array.isArray(event.target.value) ? event.target.value : [event.target.value])}
+                  multiple
+                >
+                  {categories.map((category) => {
+                    return <MenuItem value={category.id}>{category.name}</MenuItem>
+                  })}
+                </Select>
+                <Button
+                    onClick={handleOpenCategory}
+                    style={{
+                      padding: '8px',
+                      color: '#9CA3AD',
+                      backgroundColor: 'transparent',
+                      background:'none',
+                      textTransform: 'none',
+                      width: '20%',
+                    }}
+                  >
+                    <AddIcon/>
+                  </Button>
+              </FormControl>   
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              id="title"
+              label="Titulo"
+              name="title"
+              defaultValue={cardModal?.title}  
+              />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              id="description"
+              type="textarea"
+              label="Descrição"
+              name="description"
+              multiline
+              rows={4}
+              defaultValue={cardModal?.description}  
+            />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth required>
+                <InputLabel id="status">Status</InputLabel>
+                <Select
+                  labelId="status"
+                  id="status"
+                  name="status"
+                  defaultValue={cardModal?.status}
+                >
+                  {columns.map((column) => {
+                    return <MenuItem value={column.status}>{column.name}</MenuItem>
+                  })}
+                </Select>
+              </FormControl> 
+            </Grid>
+        </Grid>
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+        >
+          Atualizar
+        </Button>
+      </Box>
+      </Modal>
+    )
+  }
+
   const ModalComponent = () => {
     return (
       <Modal
@@ -378,7 +503,7 @@ export function Home() {
         <Typography variant="h6">
           Chameleon Stack - Kanban
         </Typography>
-        <Button variant="contained" color="primary" onClick={()=>handleOpen()} style={{ textTransform: 'none',}}>
+        <Button variant="contained" color="primary" onClick={handleOpen} style={{ textTransform: 'none',}}>
           Nova Task
         </Button>
       </Grid>
@@ -462,7 +587,7 @@ export function Home() {
                             height: '11rem',
                             marginBottom: '1rem',
                           }}
-                          onClick={() => handleOpen(card)}
+                          onClick={() => handleOpenCardUpdated(card)}
                         >
                           <h4 style={{
                             color: 'black',
@@ -512,6 +637,7 @@ export function Home() {
       </DragDropContext>
       </Container>
      <ModalComponent />
+     <ModalComponentUpdate />
      <ModalCreateCategory />
     </ThemeProvider>
   );
