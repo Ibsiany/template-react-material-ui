@@ -176,6 +176,21 @@ export function Home() {
     }
   };
 
+  const handleDeleteCategory = async (id:string) => {
+    if (!id) {
+      toast.error('Ocorreu um erro ao deletar category!');
+    }
+    
+    try {
+      await api.delete(`/category/${id}`);
+
+      setCategories(categories.filter(category => category.id !== id));
+
+    } catch (error) {
+      toast.error('Ocorreu um erro ao deletar category!');
+    }
+  };
+
   const handleSubmitUpdateCard = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -354,7 +369,24 @@ export function Home() {
                   multiple
                 >
                   {categories.map((category) => {
-                    return <MenuItem value={category.id}>{category.name}</MenuItem>
+                    return <MenuItem value={category.id}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'start',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      {category.name}
+                      <Button
+                        style={{ margin: '0', padding: '0' }}
+                        onClick={() => {
+                          handleDeleteCategory(category.id);
+                        }}
+                      >
+                        <ClearIcon style={{ color: darken(0.9,'#9CA3AD')}}/>
+                      </Button>
+                    </MenuItem>
                   })}
                 </Select>
                 <Button
@@ -450,7 +482,22 @@ export function Home() {
                   multiple
                 >
                   {categories.map((category) => {
-                    return <MenuItem value={category.id}>{category.name}</MenuItem>
+                    return <MenuItem value={category.id} style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'start',
+                      justifyContent: 'space-between',
+                    }}>
+                      {category.name}
+                      <Button
+                        style={{ margin: '0', padding: '0' }}
+                        onClick={() => {
+                          handleDeleteCategory(category.id);
+                        }}
+                      >
+                        <ClearIcon style={{ color: darken(0.9,'#9CA3AD')}}/>
+                      </Button>
+                    </MenuItem>
                   })}
                 </Select>
                 <Button
@@ -658,7 +705,9 @@ export function Home() {
                                   color: darken(0.5, category.color),
                                   display: 'flex',
                                   alignItems: 'center',
-                                }}>{category.name}</h5>
+                                }}>
+                                  {category.name}
+                                </h5>
                               )
                             })}
                           </div>
@@ -667,7 +716,9 @@ export function Home() {
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
                             marginBottom: '1rem'
-                          }}>{card.description}</text>
+                            }}>
+                              {card.description}
+                            </text>
                         </div>
                       )}
                     </Draggable>
