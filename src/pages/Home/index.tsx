@@ -79,7 +79,9 @@ export function Home() {
   const [openCategory, setOpenCategory] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    setOpen(true)
+  };
   const handleClose = () => {
     setSelectedCategories([])
     setOpen(false)
@@ -96,6 +98,7 @@ export function Home() {
     setOpenCardUpdated(true);
   };
   const handleCloseCardUpdated = () => {
+    setSelectedCategories([])
     setOpenCardUpdated(false)
     setCardModal(undefined)
   };
