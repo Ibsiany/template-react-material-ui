@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Container, FormControl, Grid, InputBase, InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
 import { darken } from 'polished';
@@ -134,7 +135,7 @@ export function Home() {
     const data = new FormData(event.currentTarget);
 
     
-    if (!data.get('title') || !data.get('status') || !data.get('description')) {
+    if (!data.get('title') || (!data.get('status') && !status) || !data.get('description')) {
       toast.error('Preencha todos os campos!');
       
       return;
@@ -142,16 +143,35 @@ export function Home() {
 
     
     try {
-      await api.post(`/card/${user.user.id}`, {
+      const card = await api.post<ICard>(`/card/${user.user.id}`, {
         title: data.get('title'),
         description: data.get('description'),
-        status: data.get('status'),
+        status: data.get('status') || status,
         category_ids:selectedCategories
       });
+
+      setCards([...cards, card.data])
 
       handleClose()
     } catch (error) {
       toast.error('Ocorreu um erro ao cadastrar card!');
+    }
+  };
+
+  const handleDeleteCard = async (id:string) => {
+    handleCloseCardUpdated()
+
+    if (!id) {
+      toast.error('Ocorreu um erro ao deletar card!');
+    }
+    
+    try {
+      await api.delete(`/card/${id}`);
+
+      setCards(cards.filter(card => card.id !== id));
+
+    } catch (error) {
+      toast.error('Ocorreu um erro ao deletar card!');
     }
   };
 
@@ -172,7 +192,7 @@ export function Home() {
         category_ids:selectedCategories
       });
 
-      handleClose()
+      handleCloseCardUpdated()
     } catch (error) {
       toast.error('Ocorreu um erro ao atualizar card!');
     }
@@ -588,17 +608,28 @@ export function Home() {
                             marginBottom: '1rem',
                           }}
                           onClick={() => handleOpenCardUpdated(card)}
-                        >
-                          <h4 style={{
-                            color: 'black',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            maxWidth: '25ch',
-                            marginBottom: '1rem'
-                          }}>
-                            {card.title}
-                          </h4>
+                          >
+                            <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', flexDirection: 'row', width: '100%' }}>
+                              <h4 style={{
+                                color: 'black',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                maxWidth: '25ch',
+                                marginBottom: '1rem'
+                              }}>
+                                {card.title}
+                              </h4>
+                              <Button
+                                style={{ margin: '0', padding: '0' }}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  handleDeleteCard(card.id);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </Button>
+                            </div> 
                           
                           <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'start', gap: '8px', marginBottom: '1rem', flexDirection: 'row' }}>
                               {card?.categories && card?.categories.map((category) => {
