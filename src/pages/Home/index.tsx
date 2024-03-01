@@ -113,7 +113,6 @@ export function Home() {
       status: destination.droppableId,
     }).then(response => {
       const getCards = cards.filter(card => card.id !== draggableId)
-      console.log([...getCards,response.data])
 
       setCards([...getCards,response.data])
     })
@@ -121,7 +120,6 @@ export function Home() {
 
   useEffect(() => {
     api.get(`/card/${user.user.id}`).then(response => {
-      console.log(response.data)
       setCards(response.data)
     })
 
