@@ -88,7 +88,6 @@ export function Home() {
     setStatus('')
   };
   
-  
   const handleOpenCategory = () => setOpenCategory(true);
   const handleCloseCategory = () => setOpenCategory(false);
   
