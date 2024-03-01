@@ -2,7 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, Button, Container, FormControl, Grid, InputBase, InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
+import { Box, Button, Container, FormControl, Grid, Input, InputBase, InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
 import { darken } from 'polished';
 import { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
@@ -186,12 +186,16 @@ export function Home() {
     }
     
     try {
-      await api.patch(`/card/${cardModal?.id}`, {
+      const cardUPdated = await api.patch(`/card/${cardModal?.id}`, {
         title: data.get('title'),
         description: data.get('description'),
         status: data.get('status'),
         category_ids:selectedCategories
       });
+
+      const cardsOld = cards.filter(card => card.id !== cardModal?.id)
+
+      setCards([...cardsOld, cardUPdated.data])
 
       handleCloseCardUpdated()
     } catch (error) {
@@ -303,13 +307,14 @@ export function Home() {
               name="name"
             />
           </Grid>
-          <Grid item xs={12}>
-            <TextField
+          <Grid item xs={12} style={{display: 'flex',alignItems:'center',  flexDirection: 'row', gap:'1rem'}}>
+            <InputLabel htmlFor="color">Cor</InputLabel>
+            <Input
               required
-              fullWidth
               id="color"
-              label="Cor"
               name="color"
+              type="color"
+              style={{ width: '2rem'}}  
             />
           </Grid>
         </Grid>
