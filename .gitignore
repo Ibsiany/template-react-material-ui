@@ -1,0 +1,15 @@
+node_modules
+coverage
+dist
+tmp/*
+!tmp/.gitkeep
+!tmp/user-icon.png
+
+.DS_Store
+.env
+
+yarn.lock
+yarn-error.log
+
+logs/*
+!logs/.gitkeep
