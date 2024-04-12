@@ -3,7 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Container, FormControl, Grid, IconButton, Input, InputBase, InputLabel, Menu, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
-import { darken } from 'polished';
+import { darken, lighten } from 'polished';
 import { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import toast, { Toaster } from 'react-hot-toast';
@@ -300,14 +300,13 @@ export function Home() {
           <div style={{
             position: 'relative',
             borderRadius: '4px',
-            backgroundColor: '#f1f1f1',
+            backgroundColor: '#F6F7F9',
             width: '100%',
             display: 'flex',
             flexDirection: 'row',
           }}>
-            <SearchIcon style={{ position: 'absolute', margin: '5px', zIndex:'1'}} />
+            <SearchIcon style={{ position: 'absolute', margin: '5px', zIndex:'1', color: '#9CA3AD'}} />
             <SearchInput />
-            <Button onClick={() => searchCard('')}><ClearIcon style={{ color: darken(0.4,'#9CA3AD') }} /></Button>
           </div>
         </div>
       </div>
@@ -324,7 +323,7 @@ export function Home() {
     >
       <Box component="form" noValidate onSubmit={handleSubmitCreateCategory} sx={styleCategory}>
         <Typography component="text" variant="overline" style={{ textAlign: 'start'}}>
-          Criação de card
+          Criação de categoria
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -595,10 +594,17 @@ export function Home() {
       <Header param='home' searchBar={SearchBar} />
       <Container style={{marginTop: '2rem', maxWidth: '1220px'}}>
       <Grid container justifyContent="space-between" alignItems="center">
-        <Typography variant="h6">
-          Chameleon Stack - Kanban
+          <Typography variant="h6" style={{
+            fontFamily: 'Poppins',
+            fontSize: '24px',
+            fontWeight: '500',
+            lineHeight: '32px',
+            textAlign: 'left'
+          }}>
+          Chameleon Stack
         </Typography>
-        <Button variant="contained" color="primary" onClick={handleOpen} style={{ textTransform: 'none',}}>
+          <Button variant="contained" color="primary" onClick={handleOpen}
+            style={{textTransform: 'none'}}>
           Nova Task
         </Button>
       </Grid>
@@ -610,7 +616,12 @@ export function Home() {
               overflowX: 'auto',
               justifyContent: 'center',
               alignItems: 'start', 
-              gap: '8px'
+              gap: '8px',
+              fontFamily: 'Poppins',
+              fontSize: '14px',
+              fontWeight: '600',
+              lineHeight: '24px',
+              textAlign: 'left'
             }}> 
             {columns.map((column) => {
             return (
@@ -636,17 +647,39 @@ export function Home() {
                       borderRadius: '4px',
                       paddingBottom: '1rem',
                     }}
-                >
-                  <h3
-                    style={{
-                      background: 'white',
-                      width: '100%',
-                      padding: '0',
-                      margin: '0'
-                    }}
                   >
+                    <div
+                      style={{
+                        background: 'white',
+                        width: '100%',
+                        padding: '0',
+                        margin: '0',
+                        display: 'flex',
+                        alignItems: 'start',
+                        justifyContent: 'start',
+                        flexDirection: 'row',
+                        paddingBottom: '1rem',
+                      }}
+                    >
+                      <h3>
                       {column.name}
-                  </h3>
+
+                      </h3>
+                      <div style={{
+                        padding: '0.8rem',
+                        marginLeft: '0.5rem',
+                        backgroundColor: '#F6F7F9',
+                        color: '#9CA3AD',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%', 
+                        width: '1.5rem', 
+                        height: '1.5rem',
+                      }}>
+                        {cards.filter(card => card.status === column.status).length}
+                      </div>
+                    </div>
                   <Button
                     onClick={() => (setStatus(column.status), handleOpen())}
                     style={{
@@ -726,8 +759,8 @@ export function Home() {
                                   padding: '0.5rem',
                                   borderRadius: '100px',
                                   gap: '8px',
-                                  background: category.color,
-                                  color: darken(0.5, category.color),
+                                  background: lighten(0.5, category.color),
+                                  color: category.color,
                                   display: 'flex',
                                   alignItems: 'center',
                                 }}>

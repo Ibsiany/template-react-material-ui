@@ -8,7 +8,7 @@ import { useAuth } from '../../hooks/useAuth';
 const Header = ({ param, searchBar }: { param: string | undefined, searchBar?:any }) => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  
+
   const SearchBar = searchBar;
 
   const navigateHeader = async () => {
@@ -24,7 +24,7 @@ const Header = ({ param, searchBar }: { param: string | undefined, searchBar?:an
   };
 
   return (
-    <AppBar position="static" sx={{ height: '12vh' }} color='default'>
+    <AppBar position="sticky" sx={{ backgroundColor: "#F6F7F9 !important", borderTop:'1px solid', boxShadow: 'none' }}>
       <Toolbar>
         <IconButton edge="start" color="inherit" aria-label="menu">
             <img src={logo} alt="Chameleon Stack - Kanban" style={{ height: '30px' }} />
@@ -43,7 +43,7 @@ const Header = ({ param, searchBar }: { param: string | undefined, searchBar?:an
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Avatar alt="User Profile" src={user?.user?.photo || userDefault} />
               <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', marginLeft: 2, gap:0 }}>
-                <Typography variant="overline">
+                <Typography variant="overline" sx={{color:"#2A2A35"}}>
                   {user?.user?.name || 'User Default'}
                 </Typography>
                 <Button
