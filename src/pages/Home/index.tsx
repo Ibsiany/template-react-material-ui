@@ -681,7 +681,7 @@ export function Home() {
                       </div>
                     </div>
                   <Button
-                    onClick={() => (setStatus(column.status), handleOpen())}
+                    onClick={() => (setStatus(column.name), handleOpen())}
                     style={{
                       padding: '8px',
                       backgroundColor: '#F6F7F9',
