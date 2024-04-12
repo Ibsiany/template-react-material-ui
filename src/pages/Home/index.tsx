@@ -190,21 +190,6 @@ export function Home() {
     }
   };
 
-  const handleDeleteCategory = async (id:string) => {
-    if (!id) {
-      toast.error('Ocorreu um erro ao deletar category!');
-    }
-    
-    try {
-      await api.delete(`/category/${id}`);
-
-      setCategories(categories.filter(category => category.id !== id));
-
-    } catch (error) {
-      toast.error('Ocorreu um erro ao deletar category!');
-    }
-  };
-
   const handleSubmitUpdateCard = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -232,6 +217,21 @@ export function Home() {
     }
   };
 
+  const handleDeleteCategory = async (id:string) => {
+    if (!id) {
+      toast.error('Ocorreu um erro ao deletar category!');
+    }
+    
+    try {
+      await api.delete(`/category/${id}`);
+
+      setCategories(categories.filter(category => category.id !== id));
+
+    } catch (error) {
+      toast.error('Ocorreu um erro ao deletar category!');
+    }
+  };
+
   const handleSubmitCreateCategory = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -245,10 +245,12 @@ export function Home() {
     }
     
     try {
-      await api.post(`/category/${user.user.id}`, {
+      const category = await api.post(`/category/${user.user.id}`, {
         name: data.get('name'),
         color: data.get('color'),
       });
+
+      setCategories([...categories, category.data])
 
       handleCloseCategory()
     } catch (error) {
@@ -697,7 +699,7 @@ export function Home() {
                   </Button>
                     {cards.map((card, index) => {
                     if(card.status === column.status) return (
-                    <Draggable draggableId={card.id} index={index+1} key={card.id}>
+                    <Draggable draggableId={card.id} index={index} key={card.id}>
                       {(provided) => (
                         <div
                           {...provided.draggableProps}
@@ -717,7 +719,7 @@ export function Home() {
                           }}
                           onClick={() => handleOpenCardUpdated(card)}
                           >
-                            <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', flexDirection: 'row', width: '100%' }}>
+                            <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', flexDirection: 'row', width: '100%' }} key={card.id}>
                               <h4 style={{
                                 color: 'black',
                                 overflow: 'hidden',
@@ -728,7 +730,7 @@ export function Home() {
                               }}>
                                 {card.title}
                               </h4>
-                                <div onClick={(event) => {
+                                <div key={card.id} onClick={(event) => {
                                   event.stopPropagation();
                                 }}>
                                   <IconButton aria-label="settings" onClick={handleClick}>
@@ -740,10 +742,14 @@ export function Home() {
                                     open={openClick}
                                     onClose={handleClickClose}
                                   >
-                                    <MenuItem onClick={() => handleOpenCardUpdated(card) }>
+                                  <MenuItem onClick={() => {
+                                    console.log(card)
+                                    handleOpenCardUpdated(card)
+                                  }
+                                  }>
                                       Editar
                                     </MenuItem>
-                                    <MenuItem onClick={() => { handleDeleteCard(card.id); }}>
+                                    <MenuItem onClick={() => { handleDeleteCard(card.id) }}>
                                       Excluir
                                     </MenuItem>
                                   </Menu>
