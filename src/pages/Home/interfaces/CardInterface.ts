@@ -1,9 +1,9 @@
-import { CategoriesInterface } from "./CategoriesInterface"
+import { CategoriesInterface } from "./CategoriesInterface";
 
 export type CardInterface = {
-    id: string,
-    description: string,
-    status:string,
-    title: string,
-    categories:CategoriesInterface[]
+    id: string;
+    description: string;
+    status:string;
+    title: string;
+    categories: CategoriesInterface[];
 }

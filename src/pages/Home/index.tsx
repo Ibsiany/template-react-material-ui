@@ -1,20 +1,18 @@
-import { MoreVert } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
-import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, Button, Container, FormControl, Grid, IconButton, Input, InputBase, InputLabel, Menu, MenuItem, Modal, Select, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
-import { darken, lighten } from 'polished';
+import { Button, Container, Grid, InputBase, ThemeProvider, Typography, createTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import toast, { Toaster } from 'react-hot-toast';
+import Card from '../../components/Card';
 import Header from '../../components/Header';
+import ModalCard from '../../components/ModalCard';
+import ModalCategory from '../../components/ModalCategory';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../services/api';
 import { columns } from './columns';
 import { CardInterface } from './interfaces/CardInterface';
 import { CategoriesInterface } from './interfaces/CategoriesInterface';
-import { styleCard } from './styles/StyleCard';
-import { styleCategory } from './styles/StyleCategory';
 
 const defaultTheme = createTheme();
 
@@ -24,7 +22,7 @@ export function Home() {
   const [status, setStatus] = useState('');
   const [open, setOpen] = useState(false);
   const [cardModal, setCardModal] = useState<CardInterface>();
-  const [openCardUpdated, setOpenCardUpdated] = useState(false);
+  const [type, setType] = useState('');
   const [openCategory, setOpenCategory] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -41,11 +39,13 @@ export function Home() {
   
   const handleOpen = () => {
     setOpen(true)
+    setType('create');
     handleClickClose()
   };
-
+  
   const handleClose = () => {
     setSelectedCategories([])
+    setType('create');
     setOpen(false)
     setStatus('')
   };
@@ -55,15 +55,18 @@ export function Home() {
   
   const handleOpenCardUpdated = (card?: CardInterface) => {
     setCardModal(card)
+    setOpen(true)
     setSelectedCategories(card?.categories.map(category => category.id) || [])
-    setOpenCardUpdated(true);
     handleClickClose();
+    setType('update');
   };
+
   const handleCloseCardUpdated = () => {
     setSelectedCategories([])
-    setOpenCardUpdated(false)
     setCardModal(undefined)
     handleClickClose()
+    setOpen(false)
+    setType('update');
   };
 
   const { user } = useAuth();
@@ -264,281 +267,6 @@ export function Home() {
     );
   };
 
-  const ModalCreateCategory = () => {
-    return (
-      <Modal
-      open={openCategory}
-      onClose={handleCloseCategory}
-      aria-labelledby="child-modal-title"
-      aria-describedby="child-modal-description"
-    >
-      <Box component="form" noValidate onSubmit={handleSubmitCreateCategory} sx={styleCategory}>
-        <Typography component="text" variant="overline" style={{ textAlign: 'start'}}>
-          Criação de categoria
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              id="name"
-              label="Nome"
-              name="name"
-            />
-          </Grid>
-          <Grid item xs={12} style={{display: 'flex',alignItems:'center',  flexDirection: 'row', gap:'1rem'}}>
-            <InputLabel htmlFor="color">Cor</InputLabel>
-            <Input
-              required
-              id="color"
-              name="color"
-              type="color"
-              style={{ width: '2rem'}}  
-            />
-          </Grid>
-        </Grid>
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-        >
-          Criar
-        </Button>
-      </Box>
-    </Modal>
-    )
-  }
-
-  const ModalComponentUpdate = () => {
-    return (
-      <Modal
-        open={openCardUpdated}
-        onClose={handleCloseCardUpdated}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-      <Box component="form" noValidate onSubmit={handleSubmitUpdateCard} sx={styleCard}>
-          <Grid container spacing={2}>
-          <Grid item xs={12}>
-              <FormControl fullWidth required style={{ display: 'flex',alignItems:'center',  flexDirection: 'row'}}>
-                <InputLabel id="category">Categorias</InputLabel>
-                <Select
-                  labelId="category"
-                  id="category"
-                  name="category"
-                  style={{ width: '80%' }}
-                  value={selectedCategories}
-                  onChange={(event) => setSelectedCategories(Array.isArray(event.target.value) ? event.target.value : [event.target.value])}
-                  multiple
-                >
-                  {categories.map((category) => {
-                    return <MenuItem value={category.id}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'start',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      {category.name}
-                      <Button
-                        style={{ margin: '0', padding: '0' }}
-                        onClick={() => {
-                          handleDeleteCategory(category.id);
-                        }}
-                      >
-                        <ClearIcon style={{ color: darken(0.9,'#9CA3AD')}}/>
-                      </Button>
-                    </MenuItem>
-                  })}
-                </Select>
-                <Button
-                    onClick={handleOpenCategory}
-                    style={{
-                      padding: '8px',
-                      color: '#9CA3AD',
-                      backgroundColor: 'transparent',
-                      background:'none',
-                      textTransform: 'none',
-                      width: '20%',
-                    }}
-                  >
-                    <AddIcon/>
-                  </Button>
-              </FormControl>   
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              id="title"
-              label="Titulo"
-              name="title"
-              defaultValue={cardModal?.title}  
-              />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              id="description"
-              type="textarea"
-              label="Descrição"
-              name="description"
-              multiline
-              rows={4}
-              defaultValue={cardModal?.description}  
-            />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel id="status">Status</InputLabel>
-                <Select
-                  labelId="status"
-                  id="status"
-                  name="status"
-                  defaultValue={cardModal?.status}
-                >
-                  {columns.map((column) => {
-                    return <MenuItem value={column.status}>{column.name}</MenuItem>
-                  })}
-                </Select>
-              </FormControl> 
-            </Grid>
-        </Grid>
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-        >
-          Atualizar
-        </Button>
-      </Box>
-      </Modal>
-    )
-  }
-
-  const ModalComponent = () => {
-    return (
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-      <Box component="form" noValidate onSubmit={handleSubmitCreateCard} sx={styleCard}>
-        <Typography component="text" variant="overline" style={{ textAlign: 'start'}}>
-          Criação de card
-        </Typography>
-          <Grid container spacing={2}>
-          <Grid item xs={12}>
-              <FormControl fullWidth required style={{ display: 'flex',alignItems:'center',  flexDirection: 'row'}}>
-                <InputLabel id="category">Categorias</InputLabel>
-                <Select
-                  labelId="category"
-                  id="category"
-                  name="category"
-                  style={{ width: '80%' }}
-                  value={selectedCategories}
-                  onChange={(event) => setSelectedCategories(Array.isArray(event.target.value) ? event.target.value : [event.target.value])}
-                  multiple
-                >
-                  {categories.map((category) => {
-                    return <MenuItem value={category.id} style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'start',
-                      justifyContent: 'space-between',
-                    }}>
-                      {category.name}
-                      <Button
-                        style={{ margin: '0', padding: '0' }}
-                        onClick={() => {
-                          handleDeleteCategory(category.id);
-                        }}
-                      >
-                        <ClearIcon style={{ color: darken(0.9,'#9CA3AD')}}/>
-                      </Button>
-                    </MenuItem>
-                  })}
-                </Select>
-                <Button
-                    onClick={handleOpenCategory}
-                    style={{
-                      padding: '8px',
-                      color: '#9CA3AD',
-                      backgroundColor: 'transparent',
-                      background:'none',
-                      textTransform: 'none',
-                      width: '20%',
-                    }}
-                  >
-                    <AddIcon/>
-                  </Button>
-              </FormControl>   
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              id="title"
-              label="Titulo"
-              name="title"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              id="description"
-              type="textarea"
-              label="Descrição"
-              name="description"
-              multiline
-              rows={4}
-            />
-            </Grid>
-            <Grid item xs={12}>
-            {status !== '' ?
-                <TextField
-                required
-                id="status"
-                label="Status"
-                name="status"
-                value={status}
-                disabled
-              />
-              :
-              <FormControl fullWidth required>
-                <InputLabel id="status">Status</InputLabel>
-                <Select
-                  labelId="status"
-                  id="status"
-                  name="status"
-                >
-                  {columns.map((column) => {
-                    return <MenuItem value={column.status}>{column.name}</MenuItem>
-                  })}
-                </Select>
-              </FormControl>   
-              }
-            </Grid>
-        </Grid>
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-        >
-          Criar
-        </Button>
-      </Box>
-      </Modal>
-    )
-  }
-  
   return (
     <ThemeProvider theme={defaultTheme}>
       <Toaster position="top-right" reverseOrder={false} />
@@ -648,93 +376,16 @@ export function Home() {
                   </Button>
                     {cards.map((card, index) => {
                     if(card.status === column.status) return (
-                    <Draggable draggableId={card.id} index={index} key={card.id}>
-                      {(provided) => (
-                        <div
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          ref={provided.innerRef}
-                          style={{
-                            ...provided.draggableProps.style,
-                            padding: '8px',
-                            borderRadius: '4px',
-                            backgroundColor: 'white',
-                            width: '23rem',
-                            textTransform: 'none',
-                            border: '1px solid #EFF1F3',
-                            boxShadow: '0px 4px 8px 0px #14141B14',
-                            height: '11rem',
-                            marginBottom: '1rem',
-                          }}
-                          onClick={() => handleOpenCardUpdated(card)}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', flexDirection: 'row', width: '100%' }} key={card.id}>
-                              <h4 style={{
-                                color: 'black',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                                maxWidth: '25ch',
-                                marginBottom: '1rem'
-                              }}>
-                                {card.title}
-                              </h4>
-                                <div key={card.id} onClick={(event) => {
-                                  event.stopPropagation();
-                                }}>
-                                  <IconButton aria-label="settings" onClick={handleClick}>
-                                    <MoreVert />
-                                  </IconButton>
-                                  <Menu
-                                    id="long-menu"
-                                    anchorEl={anchorEl}
-                                    open={openClick}
-                                    onClose={handleClickClose}
-                                  >
-                                  <MenuItem onClick={() => {
-                                    console.log(card)
-                                    handleOpenCardUpdated(card)
-                                  }
-                                  }>
-                                      Editar
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { handleDeleteCard(card.id) }}>
-                                      Excluir
-                                    </MenuItem>
-                                  </Menu>
-                                </div>
-                            </div> 
-                          
-                          <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'start', gap: '8px', marginBottom: '1rem', flexDirection: 'row' }}>
-                              {card?.categories && card?.categories.map((category) => {
-                              return (
-                                <h5 style={{
-                                  width: 'auto',
-                                  height: '24px',
-                                  padding: '0.5rem',
-                                  borderRadius: '100px',
-                                  gap: '8px',
-                                  background: lighten(0.5, category.color),
-                                  color: category.color,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                }}>
-                                  {category.name}
-                                </h5>
-                              )
-                            })}
-                          </div>
-                          <text style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            marginBottom: '1rem'
-                            }}>
-                              {card.description}
-                            </text>
-                        </div>
-                      )}
-                    </Draggable>
+                      <Card
+                        card={card}
+                        index={index}
+                        handleDeleteCard={handleDeleteCard}
+                        handleOpenCardUpdated={handleOpenCardUpdated}
+                        openClick={openClick}
+                        handleClick={handleClick}
+                        anchorEl={anchorEl}
+                        handleClickClose={handleClickClose}
+                      />
                 )})}
                 {provided.placeholder}
                 </div>
@@ -745,9 +396,25 @@ export function Home() {
         </div>
       </DragDropContext>
       </Container>
-     <ModalComponent />
-     <ModalComponentUpdate />
-     <ModalCreateCategory />
+      <ModalCard
+          open={open}
+          handleClose={handleClose}
+          handleSubmitCreateCard={handleSubmitCreateCard}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+          categories={categories}
+          handleDeleteCategory={handleDeleteCategory}
+          handleOpenCategory={handleOpenCategory}
+          status={status}
+          type={type}
+          cardModal={cardModal}
+          handleSubmitUpdateCard={handleSubmitUpdateCard}
+      />
+      <ModalCategory
+          openCategory={openCategory}
+          handleCloseCategory={handleCloseCategory}
+          handleSubmitCreateCategory={handleSubmitCreateCategory}
+      />
     </ThemeProvider>
   );
 };
