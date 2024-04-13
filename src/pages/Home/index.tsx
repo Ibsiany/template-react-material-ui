@@ -13,35 +13,10 @@ import { api } from '../../services/api';
 import { columns } from './columns';
 import { CardInterface } from './interfaces/CardInterface';
 import { CategoriesInterface } from './interfaces/CategoriesInterface';
+import { styleCard } from './styles/StyleCard';
+import { styleCategory } from './styles/StyleCategory';
 
 const defaultTheme = createTheme();
-
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '27.25rem',
-  height: '32.313rem',
-  bgcolor: 'background.paper',
-  borderRadius: '0.5rem',
-  boxShadow: 24,
-  background: '#FFFFFF',
-  p: 4,
-};
-
-const styleCategory = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '25rem',
-  bgcolor: 'background.paper',
-  borderRadius: '0.5rem',
-  boxShadow: 24,
-  background: '#FFFFFF',
-  p: 4,
-};
 
 export function Home() {
   const [cards, setCards] = useState<CardInterface[]>([]);
@@ -343,7 +318,7 @@ export function Home() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-      <Box component="form" noValidate onSubmit={handleSubmitUpdateCard} sx={style}>
+      <Box component="form" noValidate onSubmit={handleSubmitUpdateCard} sx={styleCard}>
           <Grid container spacing={2}>
           <Grid item xs={12}>
               <FormControl fullWidth required style={{ display: 'flex',alignItems:'center',  flexDirection: 'row'}}>
@@ -453,7 +428,7 @@ export function Home() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-      <Box component="form" noValidate onSubmit={handleSubmitCreateCard} sx={style}>
+      <Box component="form" noValidate onSubmit={handleSubmitCreateCard} sx={styleCard}>
         <Typography component="text" variant="overline" style={{ textAlign: 'start'}}>
           Criação de card
         </Typography>
