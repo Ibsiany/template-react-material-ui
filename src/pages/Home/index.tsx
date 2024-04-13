@@ -10,6 +10,9 @@ import toast, { Toaster } from 'react-hot-toast';
 import Header from '../../components/Header';
 import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../services/api';
+import { columns } from './columns';
+import { CardInterface } from './interfaces/CardInterface';
+import { CategoriesInterface } from './interfaces/CategoriesInterface';
 
 const defaultTheme = createTheme();
 
@@ -40,41 +43,12 @@ const styleCategory = {
   p: 4,
 };
 
-const columns = [
-     {
-      status: 'backlog',
-      name: 'Backlog',
-    },
-    {
-      status: 'develop',
-      name: 'Desenvolvimento',
-    },
-    {
-      status: 'done',
-      name: 'Finalizado',
-  },
-];
-
-type ICard = {
-  id: string,
-  description: string,
-  status:string,
-  title: string,
-  categories:ICategories[]
-}
-
-type ICategories = {
-  id: string,
-  color: string,
-  name: string,
-}
-
 export function Home() {
-  const [cards, setCards] = useState<ICard[]>([]);
-  const [categories, setCategories] = useState<ICategories[]>([]);
+  const [cards, setCards] = useState<CardInterface[]>([]);
+  const [categories, setCategories] = useState<CategoriesInterface[]>([]);
   const [status, setStatus] = useState('');
   const [open, setOpen] = useState(false);
-  const [cardModal, setCardModal] = useState<ICard>();
+  const [cardModal, setCardModal] = useState<CardInterface>();
   const [openCardUpdated, setOpenCardUpdated] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -82,18 +56,19 @@ export function Home() {
     
   const openClick = Boolean(anchorEl);
   
-    const handleClick = (event:any) => {
-      setAnchorEl(event.currentTarget);
-    };
+  const handleClick = (event:any) => {
+    setAnchorEl(event.currentTarget);
+  };
   
-    const handleClickClose = () => {
-      setAnchorEl(null);
-    };
+  const handleClickClose = () => {
+    setAnchorEl(null);
+  };
   
   const handleOpen = () => {
     setOpen(true)
     handleClickClose()
   };
+
   const handleClose = () => {
     setSelectedCategories([])
     setOpen(false)
@@ -103,7 +78,7 @@ export function Home() {
   const handleOpenCategory = () => setOpenCategory(true);
   const handleCloseCategory = () => setOpenCategory(false);
   
-  const handleOpenCardUpdated = (card?: ICard) => {
+  const handleOpenCardUpdated = (card?: CardInterface) => {
     setCardModal(card)
     setSelectedCategories(card?.categories.map(category => category.id) || [])
     setOpenCardUpdated(true);
@@ -156,9 +131,8 @@ export function Home() {
       return;
     }
 
-    
     try {
-      const card = await api.post<ICard>(`/card/${user.user.id}`, {
+      const card = await api.post<CardInterface>(`/card/${user.user.id}`, {
         title: data.get('title'),
         description: data.get('description'),
         status: data.get('status') || status,

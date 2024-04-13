@@ -12,8 +12,8 @@ export function Routes(): JSX.Element {
         <Route path="/" element={<Login />} />
         <Route path="/create" element={<CreateAccount />} />
         <Route path="/auth" element={<PrivateRoute />}>
-          <Route path="/auth/home" element={<Home />} />
-        </Route>
+        <Route path="/auth/home" element={<Home />} />
+      </Route>
       </Router>
     </BrowserRouter>
   );
