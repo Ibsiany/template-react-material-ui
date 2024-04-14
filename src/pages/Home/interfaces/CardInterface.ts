@@ -5,5 +5,5 @@ export type CardInterface = {
     description: string;
     status:string;
     title: string;
-    categories: CategoriesInterface[];
+    categories?: CategoriesInterface[];
 }

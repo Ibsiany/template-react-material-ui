@@ -56,7 +56,7 @@ export function Home() {
   const handleOpenCardUpdated = (card?: CardInterface) => {
     setCardModal(card)
     setOpen(true)
-    setSelectedCategories(card?.categories.map(category => category.id) || [])
+    setSelectedCategories(card?.categories?.map(category => category.id) || [])
     handleClickClose();
     setType('update');
   };
@@ -374,11 +374,9 @@ export function Home() {
                     <AddIcon/>
                     Nova Task
                   </Button>
-                    {cards.map((card, index) => {
-                    if(card.status === column.status) return (
                       <Card
-                        card={card}
-                        index={index}
+                        cards={cards}
+                        column={column}
                         handleDeleteCard={handleDeleteCard}
                         handleOpenCardUpdated={handleOpenCardUpdated}
                         openClick={openClick}
@@ -386,7 +384,6 @@ export function Home() {
                         anchorEl={anchorEl}
                         handleClickClose={handleClickClose}
                       />
-                )})}
                 {provided.placeholder}
                 </div>
                 )}

@@ -45,7 +45,7 @@ const ModalCard = ({
                 onChange={(event) => setSelectedCategories(Array.isArray(event.target.value) ? event.target.value : [event.target.value])}
                 multiple
               >
-                {categories.map((category) => {
+                {categories?.length > 0  && categories.map((category) => {
                   return <MenuItem value={category.id} style={{
                     display: 'flex',
                     flexDirection: 'row',
