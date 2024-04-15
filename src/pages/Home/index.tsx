@@ -376,6 +376,7 @@ export function Home() {
                       height: '1rem',
                       width: '1rem',
                       marginRight: '0.5rem',
+                      marginBottom: '0.2rem',
                     }}/>
                     Nova Task
                   </Button>
