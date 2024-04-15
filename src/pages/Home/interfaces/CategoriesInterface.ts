@@ -1,4 +1,3 @@
-
 export type CategoriesInterface = {
     id: string;
     color: string;
