@@ -1,11 +1,11 @@
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Modal, Select, TextField, Typography } from '@mui/material';
+import OutlinedInput from "@mui/material/OutlinedInput";
 import { darken } from 'polished';
 import { columns } from '../../pages/Home/columns';
 import { styleCard } from '../../pages/Home/styles/StyleCard';
 import { ModalCreateCardInterface } from './interfaces/ModalCreateCardInterface';
-
 
 const ModalCard = ({
     open,
@@ -44,6 +44,9 @@ const ModalCard = ({
                 value={selectedCategories}
                 onChange={(event) => setSelectedCategories(Array.isArray(event.target.value) ? event.target.value : [event.target.value])}
                 multiple
+                input={
+                  <OutlinedInput id="select-category" label="Categoria" />
+                }
               >
                 {categories?.length > 0  && categories.map((category) => {
                   return <MenuItem value={category.id} style={{
@@ -119,6 +122,9 @@ const ModalCard = ({
                 labelId="status"
                 id="status"
                 name="status"
+                input={
+                  <OutlinedInput id="select-status" label="Status" />
+                }
                 defaultValue={type !== 'create' ? cardModal?.status: ''}
               >
                 {columns.map((column) => {
