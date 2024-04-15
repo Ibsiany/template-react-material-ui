@@ -28,9 +28,12 @@ export function Home() {
   const [anchorEl, setAnchorEl] = useState(null);
     
   const openClick = Boolean(anchorEl);
+
   
-  const handleClick = (event:any) => {
+  const handleClick = (event: any, card: CardInterface) => {
     setAnchorEl(event.currentTarget);
+    setSelectedCategories(card?.categories?.map(category => category.id) || [])
+    setCardModal(card)
   };
   
   const handleClickClose = () => {
@@ -53,10 +56,8 @@ export function Home() {
   const handleOpenCategory = () => setOpenCategory(true);
   const handleCloseCategory = () => setOpenCategory(false);
   
-  const handleOpenCardUpdated = (card?: CardInterface) => {
-    setCardModal(card)
+  const handleOpenCardUpdated = () => {
     setOpen(true)
-    setSelectedCategories(card?.categories?.map(category => category.id) || [])
     handleClickClose();
     setType('update');
   };
@@ -125,17 +126,17 @@ export function Home() {
     }
   };
 
-  const handleDeleteCard = async (id:string) => {
+  const handleDeleteCard = async () => {
     handleCloseCardUpdated()
 
-    if (!id) {
+    if (!cardModal || !cardModal.id) {
       toast.error('Ocorreu um erro ao deletar card!');
     }
     
     try {
-      await api.delete(`/card/${id}`);
+      await api.delete(`/card/${cardModal?.id}`);
 
-      setCards(cards.filter(card => card.id !== id));
+      setCards(cards.filter(card => card.id !== cardModal?.id));
 
     } catch (error) {
       toast.error('Ocorreu um erro ao deletar card!');
@@ -362,16 +363,20 @@ export function Home() {
                   <Button
                     onClick={() => (setStatus(column.name), handleOpen())}
                     style={{
-                      padding: '8px',
                       backgroundColor: '#F6F7F9',
                       color: '#9CA3AD',
                       textTransform: 'none',
                       display: 'flex',
-                      alignItems: 'start',
+                      alignItems: 'center',
                       justifyContent: 'start',
+                      width: '100%',
                     }}
                   >
-                    <AddIcon/>
+                    <AddIcon style={{
+                      height: '1rem',
+                      width: '1rem',
+                      marginRight: '0.5rem',
+                    }}/>
                     Nova Task
                   </Button>
                       <Card

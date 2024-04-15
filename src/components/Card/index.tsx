@@ -16,7 +16,7 @@ const Card = ({
     anchorEl,
     openClick,
     handleClickClose,
-    handleDeleteCard
+    handleDeleteCard,
 }: RequestCardInterface) => {
   return (
     <>
@@ -56,22 +56,23 @@ const Card = ({
                 <div key={card.id} onClick={(event) => {
                   event.stopPropagation()
                 }}>
-                  <IconButton aria-label="settings" onClick={handleClick}>
-                    <MoreVert />
-                  </IconButton>
+               <IconButton aria-label="settings" onClick={(event) => {
+                  event.stopPropagation();
+                  handleClick(event, card);
+                }}>
+                  <MoreVert />
+                </IconButton>
                   <Menu
                     id="long-menu"
                     anchorEl={anchorEl}
                     open={openClick}
                     onClose={handleClickClose}
                     >
-                    <MenuItem onClick={() => {
-                    handleOpenCardUpdated(card)
-                  }
-                }>
+                    <MenuItem onClick={() => {handleOpenCardUpdated()}
+                    }>
                       Editar
                     </MenuItem>
-                    <MenuItem onClick={() => { handleDeleteCard(card.id) }}>
+                    <MenuItem onClick={() => {handleDeleteCard()}}>
                       Excluir
                     </MenuItem>
                   </Menu>
