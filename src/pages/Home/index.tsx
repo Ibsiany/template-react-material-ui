@@ -1,6 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, Container, Grid, InputBase, ThemeProvider, Typography, createTheme } from '@mui/material';
+import { darken } from 'polished';
 import { useEffect, useState } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import toast, { Toaster } from 'react-hot-toast';
@@ -28,7 +29,6 @@ export function Home() {
   const [anchorEl, setAnchorEl] = useState(null);
     
   const openClick = Boolean(anchorEl);
-
   
   const handleClick = (event: any, card: CardInterface) => {
     setAnchorEl(event.currentTarget);
@@ -84,7 +84,14 @@ export function Home() {
     }).then(response => {
       const getCards = cards.filter(card => card.id !== draggableId)
 
-      setCards([...getCards,response.data])
+      const getCard = cards.find(card => card.id === draggableId)
+
+      setCards([...getCards,
+        {
+          ...getCard,
+          status: destination.droppableId
+         } as CardInterface
+      ])
     })
   }
 
@@ -104,7 +111,7 @@ export function Home() {
     const data = new FormData(event.currentTarget);
 
     
-    if (!data.get('title') || (!data.get('status') && !status) || !data.get('description')) {
+    if (!data.get('title') || (!data.get('status') && (!status || status === '')) || !data.get('description')) {
       toast.error('Preencha todos os campos!');
       
       return;
@@ -250,8 +257,8 @@ export function Home() {
 
   const SearchBar = () => {
     return (
-      <div style={{ width:'80%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <div style={{ width:'60%'}}>
+      <div style={{ width:'30rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <div style={{ width:'100%'}}>
           <div style={{
             position: 'relative',
             borderRadius: '4px',
@@ -272,7 +279,7 @@ export function Home() {
     <ThemeProvider theme={defaultTheme}>
       <Toaster position="top-right" reverseOrder={false} />
       <Header param='home' searchBar={SearchBar} />
-      <Container style={{marginTop: '2rem', maxWidth: '1220px'}}>
+      <Container style={{marginTop: '2rem', maxWidth: '1220px', paddingBottom: '1rem',}}>
       <Grid container justifyContent="space-between" alignItems="center">
           <Typography variant="h6" style={{
             fontFamily: 'Poppins',
@@ -310,22 +317,23 @@ export function Home() {
                 key={column.status}
                 direction="horizontal"
               >
-              {(provided) => (
+              {(provided, snapshot) => (
                 <div
                 {...provided.droppableProps}
                     ref={provided.innerRef}
                     style={{
                       marginTop: '1rem',
                       width: '100%',
-                      backgroundColor: '#F6F7F9',
                       color: '#9CA3AD',
                       textTransform: 'none',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexDirection:'column',
-                      borderRadius: '4px',
                       paddingBottom: '1rem',
+                      borderTopLeftRadius: '5rem',
+                      borderTopRightRadius: '5rem',
+                      backgroundColor: snapshot.isDraggingOver ? darken(0.05,'#F6F7F9') : '#F6F7F9',
                     }}
                   >
                     <div
@@ -361,7 +369,7 @@ export function Home() {
                       </div>
                     </div>
                   <Button
-                    onClick={() => (setStatus(column.name), handleOpen())}
+                    onClick={() => (setStatus(column.status), handleOpen())}
                     style={{
                       backgroundColor: '#F6F7F9',
                       color: '#9CA3AD',

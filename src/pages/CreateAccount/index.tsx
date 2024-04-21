@@ -13,14 +13,19 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import user from '../../assets/user.jpeg';
 import Header from '../../components/Header';
+import { useAuth } from '../../hooks/useAuth';
 import { api } from '../../services/api';
 
 const defaultTheme = createTheme();
 
 export function CreateAccount() {
-  const [preview, setPreview] = React.useState(user);
+  const { user: userAuth } = useAuth();
   
-  const handleFileChange = (event:any) => {
+  const userLogged = userAuth.user
+
+  const [preview, setPreview] = React.useState(userLogged?.photo || user);
+
+  const handleFileChange = (event: any) => {
     setPreview(URL.createObjectURL(event.target.files[0]));
   };
 
@@ -30,20 +35,33 @@ export function CreateAccount() {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
-
-    if (!data.get('name') || !data.get('email') || !data.get('password')) {
+    
+    if (!userLogged && (!data.get('name') || !data.get('email') || !data.get('password'))) {
       toast.error('Preencha todos os campos!');
-
+      
       return;
     }
+    
+    if (userLogged && !data.get('password')) {
+      toast.error('Informe a senha para realizara edição!');
+      
+      return;
+    }
+    
+    try {
+      if (userLogged) {
+        await api.patch(`/user/${userLogged.id}`, data);
+        
+        navigate('/auth/home');
 
-      try {
-        await api.post('/user',data);
-  
-        navigate('/');
-      } catch (error) {
-        toast.error('Ocorreu algum erro na criação do usuário!');
+        return;
       }
+      await api.post('/user',data);
+      
+      navigate('/');
+    } catch (error) {
+      toast.error(`Ocorreu algum erro na ${userLogged ? 'edição' : 'criação'} do usuário!`);
+    }
   };
 
   return (
@@ -67,12 +85,12 @@ export function CreateAccount() {
             <Grid container spacing={2}>
             <Grid item xs={12}>
                 Foto: 
-                <label htmlFor="photo" style={{ cursor: 'pointer', display: 'flex', justifyContent: 'center' }}>
+                <label htmlFor="file" style={{ cursor: 'pointer', display: 'flex', justifyContent: 'center' }}>
                   <input
                     type="file"
                     accept="image/*"
-                    id="photo"
-                    name="photo"
+                    id="file"
+                    name="file"
                     style={{ display: 'none' }}
                     onChange={handleFileChange}
                   />
@@ -81,20 +99,22 @@ export function CreateAccount() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  required
+                  required={userLogged && true}
                   fullWidth
                   id="name"
                   label="Nome"
                   name="name"
+                  defaultValue={userLogged?.name || ''}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  required
+                  required={userLogged && true}
                   fullWidth
                   id="email"
                   label="E-mail"
                   name="email"
+                  defaultValue={userLogged?.email || ''}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -114,7 +134,7 @@ export function CreateAccount() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Cadastrar
+              {userLogged ? 'Editar' : 'Cadastrar'}
             </Button>
           </Box>
         </Box>

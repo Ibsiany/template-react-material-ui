@@ -19,29 +19,32 @@ const Card = ({
     handleDeleteCard,
 }: RequestCardInterface) => {
   return (
-    <>
-    {cards.map((card, index) => {
+    <div style={{ 
+      height: '70vh', 
+      overflowY: 'auto', 
+    }}>
+      {cards.map((card, index) => {
       if(card.status === column.status) return (
       <Draggable draggableId={card.id} index={index} key={card.id}>
       {(provided) => (
-        <div
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-          style={{
-            ...provided.draggableProps.style,
-            padding: '8px',
-            borderRadius: '4px',
-            backgroundColor: 'white',
-            width: '23rem',
-            textTransform: 'none',
-            border: '1px solid #EFF1F3',
-            boxShadow: '0px 4px 8px 0px #14141B14',
-            height: '11rem',
-            marginBottom: '1rem',
-          }}
-          onClick={() => handleOpenCardUpdated(card)}
-          >
+      <div
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        ref={provided.innerRef}
+        style={{
+          ...provided.draggableProps.style,
+          padding: '8px',
+          borderRadius: '4px',
+          backgroundColor: 'white',
+          width: '23rem',
+          textTransform: 'none',
+          border: '1px solid #EFF1F3',
+          boxShadow: '0px 4px 8px 0px #14141B14',
+          height: '11rem',
+          marginBottom: '1rem',
+        }}
+        onClick={() => handleOpenCardUpdated(card)}
+      >
             <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', flexDirection: 'row', width: '100%' }} key={card.id}>
               <h4 style={{
                 color: 'black',
@@ -110,7 +113,7 @@ const Card = ({
       )}
       </Draggable>
     )})}
-      </>
+      </div>
   );
 }
 

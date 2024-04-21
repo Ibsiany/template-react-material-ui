@@ -13,6 +13,7 @@ export function Routes(): JSX.Element {
         <Route path="/create" element={<CreateAccount />} />
         <Route path="/auth" element={<PrivateRoute />}>
         <Route path="/auth/home" element={<Home />} />
+        <Route path="/auth/edit" element={<CreateAccount />} />
       </Route>
       </Router>
     </BrowserRouter>
