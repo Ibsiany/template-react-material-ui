@@ -56,10 +56,14 @@ export function Home() {
   const handleOpenCategory = () => setOpenCategory(true);
   const handleCloseCategory = () => setOpenCategory(false);
   
-  const handleOpenCardUpdated = () => {
+  const handleOpenCardUpdated = (card?: CardInterface) => {
     setOpen(true)
     handleClickClose();
     setType('update');
+    if (card) {
+      setSelectedCategories(card?.categories?.map(category => category.id) || [])
+      setCardModal(card)
+    }
   };
 
   const handleCloseCardUpdated = () => {
