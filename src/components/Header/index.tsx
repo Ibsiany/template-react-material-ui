@@ -74,7 +74,7 @@ const Header = ({ param, searchBar }: { param: string | undefined, searchBar?: a
           
         {param === 'home' &&
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar src={`data:image/jpeg;base64,${user?.user?.photo}` || userDefault}/>
+            <Avatar src={`data:image/jpeg;base64,${user?.user?.photo}` || userDefault} />
             <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', marginLeft: 2, gap: 0 }}>
               <div
                 onClick={handleClick}
@@ -88,7 +88,6 @@ const Header = ({ param, searchBar }: { param: string | undefined, searchBar?: a
                   padding: '0',
                   gap: '0',
                   height: '2rem',
-                  width: '8rem'
                 }}
               >
   
@@ -100,24 +99,20 @@ const Header = ({ param, searchBar }: { param: string | undefined, searchBar?: a
                   fontSize: '0.8rem',
                   fontWeight: '600',
                   textAlign: 'left',
-                  margin: '0',
-                  padding: '0',
                 }}>
                     {user?.user?.name || ''}
                 </Typography>
                 <Typography
-                  variant="overline"
+                  variant="body1"
                   sx={{ color: "#2A2A35" }}
                   style={{
                     fontFamily: 'Poppins',
                     fontSize: '0.7rem',
                     fontWeight: '400',
                     textAlign: 'left',
-                    margin: '0',
-                    padding: '0',
                 }}
                 >
-                    {user?.user?.email || ''}
+                    {user?.user?.email?.toLowerCase() || ''}
                 </Typography>
               </div>
                 <Menu
