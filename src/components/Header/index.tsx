@@ -64,7 +64,7 @@ const Header = ({ param, searchBar }: { param: string | undefined, searchBar?: a
             <img src={logo} alt="Chameleon Stack - Kanban" style={{ height: '30px',cursor: 'pointer' }} onClick={() => navigate('/auth/home')}/>
         </IconButton>
   
-        {param !== 'home' && !user.user &&
+        {param !== 'home' &&
           <Button variant="contained" onClick={navigateHeader}>{param === 'register' ? 'Entrar' : 'Cadastrar'}</Button>
         }
         
@@ -74,7 +74,7 @@ const Header = ({ param, searchBar }: { param: string | undefined, searchBar?: a
           
         {param === 'home' &&
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar alt="User Profile" src={user?.user?.photo || userDefault} />
+            <Avatar src={`data:image/jpeg;base64,${user?.user?.photo}` || userDefault}/>
             <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', marginLeft: 2, gap: 0 }}>
               <div
                 onClick={handleClick}
