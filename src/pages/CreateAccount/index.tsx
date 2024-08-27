@@ -92,7 +92,7 @@ export function CreateAccount() {
   return (
     <ThemeProvider theme={defaultTheme}>
       <Toaster position="top-right" reverseOrder={false} />
-      <Header param='register' />
+      <Header param={userLogged ? 'edit' : 'register'} />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -104,7 +104,7 @@ export function CreateAccount() {
           }}
         >
           <Typography component="h1" variant="h5">
-            Criar usuário
+          {userLogged ? 'Editar usuário' : 'Criar usuário'}
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
